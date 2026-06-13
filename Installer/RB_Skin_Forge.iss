@@ -2,7 +2,7 @@
 ; Builds RB_Skin_Forge_installer.exe from the self-contained EXE package.
 
 #define MyAppName "RB Skin Forge"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.2.0"
 #define MyAppPublisher "SpaceSquare"
 #define MyAppExeName "RB_Skin_Forge.exe"
 #define SourceDir "D:\Code\RB_Skin_Forge\Package_Program_EXE"

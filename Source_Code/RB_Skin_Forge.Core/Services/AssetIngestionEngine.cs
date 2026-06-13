@@ -24,10 +24,10 @@ public sealed class AssetIngestionEngine : IAssetIngestionEngine
                     $"Meshes: {string.Join(", ", RobloxSpec.MeshExtensions)}.");
                 break;
             case AssetType.Mesh:
-                if (input.Extension != "obj")
+                if (input.Extension == "fbx" && FbxParser.LooksBinary(input.Data))
                     result.Add(Severity.Warning,
-                        $"'.{input.Extension}' meshes (and auto-rigging) arrive in Phase 3. " +
-                        "OBJ is supported now.");
+                        "This looks like a binary FBX. Only ASCII FBX is supported — " +
+                        "re-export as ASCII FBX or OBJ.");
                 break;
         }
 

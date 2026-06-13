@@ -25,6 +25,20 @@ public sealed class QualityReport
     public int OutputWidth { get; set; }
     public int OutputHeight { get; set; }
     public ValidationResult Validation { get; set; } = new();
+
+    // --- Mesh metrics (Phase 2/3) ------------------------------------------
+    public int VertexCount { get; set; }
+    public int MaterialCount { get; set; }
+    public int AttachmentCount { get; set; }
+
+    /// <summary>Triangle count before decimation (equals <see cref="TriangleCount"/> if none ran).</summary>
+    public int OriginalTriangleCount { get; set; }
+    public bool WasDecimated { get; set; }
+
+    /// <summary>Final bounding-box size in studs (X, Y, Z). Zero for 2D assets.</summary>
+    public float BoundsX { get; set; }
+    public float BoundsY { get; set; }
+    public float BoundsZ { get; set; }
 }
 
 /// <summary>Outcome of running one asset through the pipeline.</summary>

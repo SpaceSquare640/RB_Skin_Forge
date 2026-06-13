@@ -47,11 +47,12 @@ public interface ISpecValidator
     ValidationResult Validate(QualityReport report);
 }
 
-// --- 3D engines: contracts defined now, implemented in Phase 2/3 -----------
+// --- 3D engines ------------------------------------------------------------
 
 /// <summary>
-/// Geometry processing engine: mesh optimization, scale adjustment, and
-/// attachment-node implantation. NOT YET IMPLEMENTED — see GeometryEngineStub.
+/// Geometry processing engine: parsing (OBJ + ASCII FBX), mesh optimization /
+/// decimation, scale adjustment, attachment-node implantation and validation.
+/// Implemented by <c>GeometryEngine</c> (Phase 2 OBJ, Phase 3 FBX/decimation/rig).
 /// </summary>
 public interface IGeometryEngine
 {
@@ -59,8 +60,9 @@ public interface IGeometryEngine
 }
 
 /// <summary>
-/// Auto-Rigging: detects head/body/accessory and inserts Roblox Attachment
-/// nodes. NOT YET IMPLEMENTED — see AutoRiggerStub.
+/// Auto-Rigging: places Roblox Attachment nodes on a mesh. Implemented by
+/// <c>AutoRigger</c> (Phase 3). The main pipeline rigs inline inside the
+/// GeometryEngine; <see cref="RigAsync"/> is the standalone entry point.
 /// </summary>
 public interface IAutoRigger
 {

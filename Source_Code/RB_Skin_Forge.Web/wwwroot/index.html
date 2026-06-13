@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RB Skin Forge</title>
     <base href="/" />
+    <script>
+        // Apply the saved theme before first paint to avoid a flash of the wrong scheme.
+        (function () {
+            try {
+                var t = localStorage.getItem('rb-theme');
+                if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+            } catch (e) { }
+        })();
+    </script>
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -37,6 +46,27 @@
             link.click();
             document.body.removeChild(link);
         };
+
+        // Theme: 'auto' clears the override (CSS prefers-color-scheme decides);
+        // 'light'/'dark' force the scheme and persist the choice.
+        window.rbSetTheme = (mode) => {
+            try {
+                if (mode === 'light' || mode === 'dark') {
+                    document.documentElement.setAttribute('data-theme', mode);
+                    localStorage.setItem('rb-theme', mode);
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.removeItem('rb-theme');
+                }
+            } catch (e) { }
+        };
+        window.rbGetTheme = () => {
+            try { return localStorage.getItem('rb-theme') || 'auto'; } catch (e) { return 'auto'; }
+        };
+
+        // Language: remember the user's UI language across visits.
+        window.rbSetLang = (code) => { try { localStorage.setItem('rb-lang', code); } catch (e) { } };
+        window.rbGetLang = () => { try { return localStorage.getItem('rb-lang') || ''; } catch (e) { return ''; } };
     </script>
 </body>
 

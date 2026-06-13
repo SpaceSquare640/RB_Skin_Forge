@@ -141,6 +141,34 @@ code {
     }
 }
 
+/* Manual theme override (set by the in-app Light/Dark toggle). Attribute
+   selectors outrank the media query, so a chosen theme always wins; "Auto"
+   removes the attribute and hands control back to prefers-color-scheme. */
+:root[data-theme="light"] {
+    --rb-bg: #f5f6f8;
+    --rb-panel: #ffffff;
+    --rb-border: #d9dce1;
+    --rb-text: #1b1f24;
+    --rb-muted: #5b6573;
+    --rb-accent: #1b6ec2;
+    --rb-accent-text: #ffffff;
+    --rb-console-bg: #0f1419;
+    --rb-console-text: #d7e0ea;
+}
+:root[data-theme="dark"] {
+    --rb-bg: #14181d;
+    --rb-panel: #1c2128;
+    --rb-border: #2d333b;
+    --rb-text: #e6edf3;
+    --rb-muted: #9aa5b1;
+    --rb-accent: #2f81f7;
+    --rb-accent-text: #ffffff;
+    --rb-console-bg: #0a0d10;
+    --rb-console-text: #c9d4e0;
+}
+
+.rb-shell { display: block; padding-top: 0.5rem; }
+
 .forge {
     max-width: 980px;
     margin: 0 auto;
@@ -229,4 +257,46 @@ button.secondary {
 .credit {
     text-align: center; color: var(--rb-muted); font-size: 0.8rem;
     padding: 0.5rem 0 1rem; border-top: 1px solid var(--rb-border); margin-top: 0.5rem;
+}
+
+/* --- Top bar: title + language + theme ------------------------------------ */
+.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.25rem;
+}
+.topbar h1 { margin: 0; }
+.topbar-controls { display: flex; align-items: flex-end; gap: 0.75rem; flex-wrap: wrap; }
+
+.mini-field { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.72rem; color: var(--rb-muted); }
+.mini-field select {
+    padding: 0.35rem 0.5rem; border: 1px solid var(--rb-border); border-radius: 6px;
+    background: var(--rb-panel); color: var(--rb-text); font-size: 0.85rem;
+}
+
+.seg-group { display: inline-flex; border: 1px solid var(--rb-border); border-radius: 6px; overflow: hidden; }
+.seg-group .seg {
+    padding: 0.35rem 0.7rem; border: none; background: var(--rb-panel); color: var(--rb-muted);
+    cursor: pointer; font-size: 0.8rem;
+}
+.seg-group .seg + .seg { border-left: 1px solid var(--rb-border); }
+.seg-group .seg.active { background: var(--rb-accent); color: var(--rb-accent-text); font-weight: 600; }
+
+.field span { display: block; }
+
+/* --- Batch file list ------------------------------------------------------ */
+.filelist { list-style: none; margin: 0 0 0.75rem; padding: 0; max-height: 180px; overflow: auto; }
+.filelist li {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    padding: 0.4rem 0.55rem; border: 1px solid var(--rb-border); border-radius: 6px;
+    margin-bottom: 0.35rem; cursor: pointer; font-size: 0.85rem; background: var(--rb-bg);
+}
+.filelist li.sel { border-color: var(--rb-accent); }
+.filelist .fname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.batch-summary { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--rb-muted); }
+
+.stats .tag {
+    font-style: normal; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    margin-left: 0.35rem; padding: 0.05rem 0.35rem; border-radius: 999px;
+    background: #b9770033; color: #f0a500; letter-spacing: 0.03em;
 }

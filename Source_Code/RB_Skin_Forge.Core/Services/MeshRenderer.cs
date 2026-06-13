@@ -14,6 +14,7 @@ public sealed class MeshRenderer
 {
     private static readonly Rgba32 Background = new(15, 20, 25, 255);   // #0f1419
     private static readonly Rgba32 LineColor = new(47, 129, 247, 255);  // accent blue
+    private static readonly Rgba32 AttachColor = new(247, 165, 0, 255); // attachment markers (orange)
 
     public byte[] RenderWireframe(MeshData mesh, int size = 512)
     {
@@ -43,11 +44,19 @@ public sealed class MeshRenderer
         float cx = size / 2f, cy = size / 2f;
         float midX = (minX + maxX) / 2f, midY = (minY + maxY) / 2f;
 
+        Point Project(Vector3 world)
+        {
+            var v = Vector3.Transform(world - mesh.Center, view);
+            int sx = (int)(cx + (v.X - midX) * scale);
+            int sy = (int)(cy - (v.Y - midY) * scale); // flip Y for screen space
+            return new Point(sx, sy);
+        }
+
         Point Screen(int idx)
         {
             var p = pts[idx];
             int sx = (int)(cx + (p.X - midX) * scale);
-            int sy = (int)(cy - (p.Y - midY) * scale); // flip Y for screen space
+            int sy = (int)(cy - (p.Y - midY) * scale);
             return new Point(sx, sy);
         }
 
@@ -62,9 +71,29 @@ public sealed class MeshRenderer
                 DrawLine(accessor, b, c);
                 DrawLine(accessor, c, a);
             }
+
+            // Phase 3: draw attachment nodes as filled markers on top of the mesh.
+            foreach (var at in mesh.Attachments)
+                DrawMarker(accessor, Project(at.Position), 4);
         });
 
         return Encode(img);
+    }
+
+    private static void DrawMarker(PixelAccessor<Rgba32> acc, Point p, int radius)
+    {
+        for (int dy = -radius; dy <= radius; dy++)
+        {
+            int y = p.Y + dy;
+            if ((uint)y >= (uint)acc.Height) continue;
+            var row = acc.GetRowSpan(y);
+            for (int dx = -radius; dx <= radius; dx++)
+            {
+                if (dx * dx + dy * dy > radius * radius) continue;
+                int x = p.X + dx;
+                if ((uint)x < (uint)acc.Width) row[x] = AttachColor;
+            }
+        }
     }
 
     private static byte[] Encode(Image<Rgba32> img)

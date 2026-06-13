@@ -12,8 +12,20 @@
 
 ## English
 
-### [Unreleased]
-- Phase 3: FBX support, auto-rigging (Roblox Attachment nodes), and mesh decimation for over-limit models.
+### [0.2.0] — 2026-06-13
+Phase 3 (3D) plus a multi-language interface and batch processing across all three platforms.
+
+**Added**
+- **Phase 3 — FBX input**: a pure-C# ASCII FBX reader (binary FBX is detected and rejected with guidance, since it needs native libraries that can't run in the browser build).
+- **Phase 3 — Auto-Rigging**: the geometry engine now implants Roblox **Attachment** nodes (head/neck/shoulders/root/waist/hips) from the mesh bounds and embeds them as metadata in the exported OBJ. Attachment points are drawn on the wireframe preview.
+- **Phase 3 — Mesh decimation**: meshes over the 10,000-triangle limit are automatically reduced (vertex clustering) instead of only being flagged.
+- **10-language UI** with an in-app language selector: English, 繁體中文, 简体中文, 日本語, 한국어, Español, Português, Français, Deutsch, Русский — backed by a shared localization layer in Core.
+- **Batch processing**: select multiple images/meshes at once, process them in one run, and review each result individually with a per-file status list.
+- **Manual theme toggle** (Auto / Light / Dark) in addition to the automatic system-following theme; the choice is remembered.
+- **Expanded Console & Stats**: vertices, materials, attachment count, bounding-box size, and a "decimated" indicator.
+
+**Changed**
+- `IAutoRigger` is now implemented (was a Phase 3 stub); the geometry engine accepts both OBJ and ASCII FBX.
 
 ### [0.1.0] — 2026-06-13
 First release — Phase 1 (2D images) and Phase 2 (OBJ 3D meshes) across all three platforms.
@@ -34,8 +46,20 @@ First release — Phase 1 (2D images) and Phase 2 (OBJ 3D meshes) across all thr
 
 ## 繁體中文
 
-### [未發布]
-- 第三階段：FBX 支援、自動綁定骨架（Roblox Attachment 節點），以及超出上限模型的網格精簡。
+### [0.2.0] — 2026-06-13
+第三階段（3D），加上多語言介面與批次處理，涵蓋三個平台。
+
+**新增**
+- **第三階段 — FBX 匯入**：純 C# 的 ASCII FBX 讀取器（二進位 FBX 會被偵測並拒絕並給予指引，因為它需要無法在瀏覽器版執行的原生函式庫）。
+- **第三階段 — 自動綁定骨架**：幾何引擎會依網格邊界植入 Roblox **Attachment** 節點（頭／頸／肩／根部／腰／髖），並將其作為中繼資料嵌入匯出的 OBJ。附著點會繪製在線框預覽上。
+- **第三階段 — 網格精簡**：超過 10,000 三角形上限的網格會自動精簡（頂點叢集），而非僅被標示。
+- **10 種語言介面**，內建語言選擇器：English、繁體中文、简体中文、日本語、한국어、Español、Português、Français、Deutsch、Русский——由 Core 中共用的在地化層支援。
+- **批次處理**：一次選取多個影像／網格，於單次執行中處理，並透過逐檔狀態清單個別檢視結果。
+- **手動佈景切換**（自動／淺色／深色），於自動跟隨系統之外另行提供；選擇會被記住。
+- **擴充的主控台與統計**：頂點、材質、附著點數量、邊界框大小，以及「已減面」標示。
+
+**變更**
+- `IAutoRigger` 現已實作（先前為第三階段預留）；幾何引擎同時接受 OBJ 與 ASCII FBX。
 
 ### [0.1.0] — 2026-06-13
 首個版本——第一階段（2D 影像）與第二階段（OBJ 3D 網格），涵蓋三個平台。
@@ -56,8 +80,20 @@ First release — Phase 1 (2D images) and Phase 2 (OBJ 3D meshes) across all thr
 
 ## 简体中文
 
-### [未发布]
-- 第三阶段：FBX 支持、自动绑定骨架（Roblox Attachment 节点），以及超出上限模型的网格精简。
+### [0.2.0] — 2026-06-13
+第三阶段（3D），加上多语言界面与批量处理，覆盖三个平台。
+
+**新增**
+- **第三阶段 — FBX 导入**：纯 C# 的 ASCII FBX 读取器（二进制 FBX 会被检测并拒绝并给予指引，因为它需要无法在浏览器版运行的原生库）。
+- **第三阶段 — 自动绑定骨架**：几何引擎会依网格边界植入 Roblox **Attachment** 节点（头／颈／肩／根部／腰／髋），并将其作为元数据嵌入导出的 OBJ。附着点会绘制在线框预览上。
+- **第三阶段 — 网格精简**：超过 10,000 三角形上限的网格会自动精简（顶点聚类），而非仅被标注。
+- **10 种语言界面**，内置语言选择器：English、繁體中文、简体中文、日本語、한국어、Español、Português、Français、Deutsch、Русский——由 Core 中共享的本地化层支持。
+- **批量处理**：一次选取多个图像／网格，于单次运行中处理，并通过逐文件状态列表单独查看结果。
+- **手动主题切换**（自动／浅色／深色），在自动跟随系统之外另行提供；选择会被记住。
+- **扩展的控制台与统计**：顶点、材质、附着点数量、边界框大小，以及“已减面”标识。
+
+**变更**
+- `IAutoRigger` 现已实现（此前为第三阶段预留）；几何引擎同时接受 OBJ 与 ASCII FBX。
 
 ### [0.1.0] — 2026-06-13
 首个版本——第一阶段（2D 图像）与第二阶段（OBJ 3D 网格），覆盖三个平台。

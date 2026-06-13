@@ -1,48 +1,92 @@
 @page "/"
+@implements IDisposable
 @inject IAssetPipeline Pipeline
+@inject Localizer L
 @inject Microsoft.JSInterop.IJSRuntime JS
 
 <PageTitle>RB Skin Forge</PageTitle>
 
 <div class="forge">
-    <h1>RB Skin Forge</h1>
-    <p class="tagline">Image → Roblox clothing template (2D), or OBJ mesh → cleaned, validated Roblox mesh (3D).</p>
+
+    <div class="topbar">
+        <h1>RB Skin Forge</h1>
+        <div class="topbar-controls">
+            <label class="mini-field">
+                <span>@L.T("nav.language")</span>
+                <select @onchange="OnLanguageChanged">
+                    @foreach (var lang in Languages.All)
+                    {
+                        <option value="@lang.Code" selected="@(lang.Code == L.CurrentCode)">@lang.NativeName</option>
+                    }
+                </select>
+            </label>
+            <div class="seg-group" role="group" aria-label="@L.T("nav.theme")">
+                <button class="@SegClass("auto")" @onclick='() => SetTheme("auto")'>@L.T("theme.auto")</button>
+                <button class="@SegClass("light")" @onclick='() => SetTheme("light")'>@L.T("theme.light")</button>
+                <button class="@SegClass("dark")" @onclick='() => SetTheme("dark")'>@L.T("theme.dark")</button>
+            </div>
+        </div>
+    </div>
+
+    <p class="tagline">@L.T("app.tagline")</p>
 
     <div class="forge-grid">
         <!-- Drop Zone + controls -->
         <section class="panel">
-            <h2>Drop Zone</h2>
+            <h2>@L.T("panel.dropzone")</h2>
 
             <label class="field">
-                Body part
+                <span>@L.T("field.bodypart")</span>
                 <select @bind="_bodyPart">
                     @foreach (var part in Enum.GetValues<BodyPart>())
                     {
-                        <option value="@part">@part</option>
+                        <option value="@part">@L.BodyPartName(part)</option>
                     }
                 </select>
             </label>
 
             <label class="dropzone">
-                <InputFile OnChange="OnFileSelected" accept=".png,.jpg,.jpeg,.bmp,.tga,.obj" />
-                <span>@(_fileName ?? "Choose or drop an image (PNG, JPG…) or an OBJ mesh")</span>
+                <InputFile OnChange="OnFilesSelected" multiple
+                           accept=".png,.jpg,.jpeg,.bmp,.tga,.obj,.fbx" />
+                <span>@L.T("dropzone.hint")</span>
             </label>
 
-            <button class="run" disabled="@(_busy || _data is null)" @onclick="Run">
-                @(_busy ? "Processing..." : "Generate Template")
+            @if (_items.Count > 0)
+            {
+                <ul class="filelist">
+                    @foreach (var item in _items)
+                    {
+                        <li class="@(_selected == item ? "sel" : "")" @onclick="() => Select(item)">
+                            <span class="fname">@item.Name</span>
+                            @if (item.Result is not null)
+                            {
+                                <span class="state state-@item.Result.State">@L.StateName(item.Result.State)</span>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+
+            <button class="run" disabled="@(_busy || _items.Count == 0)" @onclick="Run">
+                @(_busy ? L.T("btn.processing") : L.T("btn.generate"))
             </button>
+
+            @if (_items.Count > 1 && _processedCount > 0)
+            {
+                <p class="batch-summary">@string.Format(L.T("batch.summary"), _successCount, _items.Count)</p>
+            }
         </section>
 
         <!-- Preview -->
         <section class="panel">
-            <h2>Preview</h2>
-            @if (_outputUrl is not null)
+            <h2>@L.T("panel.preview")</h2>
+            @if (_selected?.PreviewUrl is not null)
             {
-                <img class="preview" src="@_outputUrl" alt="Generated template" />
+                <img class="preview" src="@_selected.PreviewUrl" alt="Preview" />
             }
             else
             {
-                <div class="preview placeholder">No output yet</div>
+                <div class="preview placeholder">@L.T("preview.empty")</div>
             }
         </section>
     </div>
@@ -50,38 +94,61 @@
     <!-- Console & Stats -->
     <section class="panel">
         <div class="console-head">
-            <h2>Console &amp; Stats</h2>
-            @if (_result is not null)
+            <h2>@L.T("panel.console")</h2>
+            @if (_selected?.Result is not null)
             {
-                <span class="state state-@_result.State">@_result.State</span>
+                <span class="state state-@_selected.Result.State">@L.StateName(_selected.Result.State)</span>
             }
         </div>
 
-        @if (_result is not null)
+        @if (_selected?.Result is not null)
         {
+            var r = _selected.Result.Report;
             <div class="stats">
-                @if (_result.Report.OutputWidth > 0)
+                @if (r.OutputWidth > 0)
                 {
-                    <div><strong>Dimensions</strong> @_result.Report.OutputWidth &times; @_result.Report.OutputHeight px</div>
+                    <div><strong>@L.T("stats.dimensions")</strong> @r.OutputWidth &times; @r.OutputHeight px</div>
                 }
-                @if (_result.Report.TriangleCount > 0)
+                @if (r.TriangleCount > 0)
                 {
-                    <div><strong>Triangles</strong> @_result.Report.TriangleCount.ToString("N0")</div>
+                    <div>
+                        <strong>@L.T("stats.triangles")</strong> @r.TriangleCount.ToString("N0")
+                        @if (r.WasDecimated)
+                        {
+                            <em class="tag">@L.T("stats.decimated")</em>
+                        }
+                    </div>
                 }
-                <div><strong>Output size</strong> @FormatBytes(_result.Report.TextureSizeBytes)</div>
+                @if (r.VertexCount > 0)
+                {
+                    <div><strong>@L.T("stats.vertices")</strong> @r.VertexCount.ToString("N0")</div>
+                }
+                @if (r.MaterialCount > 0)
+                {
+                    <div><strong>@L.T("stats.materials")</strong> @r.MaterialCount</div>
+                }
+                @if (r.AttachmentCount > 0)
+                {
+                    <div><strong>@L.T("stats.attachments")</strong> @r.AttachmentCount</div>
+                }
+                @if (r.BoundsX > 0 || r.BoundsY > 0 || r.BoundsZ > 0)
+                {
+                    <div><strong>@L.T("stats.bounds")</strong> @FormatBounds(r)</div>
+                }
+                <div><strong>@L.T("stats.outputsize")</strong> @FormatBytes(r.TextureSizeBytes)</div>
             </div>
         }
 
-        <pre class="console">@string.Join('\n', _log)</pre>
+        <pre class="console">@ConsoleText()</pre>
 
         <div class="actions">
-            @if (_result?.Output is not null)
+            @if (_selected?.Result?.Output is not null)
             {
-                <button class="secondary" @onclick="DownloadOutput">Download output</button>
+                <button class="secondary" @onclick="DownloadOutput">@L.T("btn.downloadoutput")</button>
             }
-            @if (_log.Count > 0)
+            @if (_selected?.Result is not null)
             {
-                <button class="secondary" @onclick="DownloadLog">Download log</button>
+                <button class="secondary" @onclick="DownloadLog">@L.T("btn.downloadlog")</button>
             }
         </div>
     </section>
@@ -90,80 +157,140 @@
 </div>
 
 @code {
-    private string? _fileName;
-    private byte[]? _data;
+    private sealed class BatchItem
+    {
+        public required string Name { get; init; }
+        public required byte[] Data { get; init; }
+        public ProcessingResult? Result { get; set; }
+        public string? PreviewUrl { get; set; }
+    }
+
+    private readonly List<BatchItem> _items = new();
+    private BatchItem? _selected;
     private BodyPart _bodyPart = BodyPart.Torso;
 
     private bool _busy;
-    private ProcessingResult? _result;
-    private string? _outputUrl;
+    private int _processedCount;
+    private int _successCount;
+    private string _theme = "auto";
     private readonly List<string> _log = new();
 
-    // 10 MB upload guard.
-    private const long MaxUploadBytes = 10 * 1024 * 1024;
+    // 25 MB upload guard (meshes can be larger than images).
+    private const long MaxUploadBytes = 25 * 1024 * 1024;
 
-    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    protected override void OnInitialized()
     {
-        var file = e.File;
-        _fileName = file.Name;
-        _outputUrl = null;
-        _result = null;
-        _log.Clear();
+        L.Changed += OnLocChanged;
+        _log.Add("RB Skin Forge ready. Add image or mesh files to begin.");
+    }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
         try
         {
-            using var stream = file.OpenReadStream(MaxUploadBytes);
-            using var ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            _data = ms.ToArray();
-            _log.Add($"Loaded '{_fileName}' ({_data.Length:N0} bytes). Ready.");
+            var savedLang = await JS.InvokeAsync<string?>("rbGetLang");
+            if (!string.IsNullOrEmpty(savedLang)) L.SetLanguage(savedLang);
+            _theme = await JS.InvokeAsync<string>("rbGetTheme");
+            StateHasChanged();
         }
-        catch (Exception ex)
-        {
-            _data = null;
-            _log.Add($"[Error] Could not read file: {ex.Message}");
-        }
+        catch { /* JS not ready / prerender — ignore */ }
     }
+
+    private void OnLocChanged() => InvokeAsync(StateHasChanged);
+
+    private async Task OnLanguageChanged(ChangeEventArgs e)
+    {
+        var code = e.Value?.ToString() ?? "en";
+        L.SetLanguage(code);
+        try { await JS.InvokeVoidAsync("rbSetLang", code); } catch { }
+    }
+
+    private async Task SetTheme(string mode)
+    {
+        _theme = mode;
+        try { await JS.InvokeVoidAsync("rbSetTheme", mode); } catch { }
+    }
+
+    private string SegClass(string mode) => _theme == mode ? "seg active" : "seg";
+
+    private async Task OnFilesSelected(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles(maximumFileCount: 20))
+        {
+            try
+            {
+                using var stream = file.OpenReadStream(MaxUploadBytes);
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                var item = new BatchItem { Name = file.Name, Data = ms.ToArray() };
+                _items.Add(item);
+                _selected ??= item;
+            }
+            catch (Exception ex)
+            {
+                _log.Add($"[Error] Could not read '{file.Name}': {ex.Message}");
+            }
+        }
+        _processedCount = 0;
+        _successCount = 0;
+    }
+
+    private void Select(BatchItem item) => _selected = item;
 
     private async Task Run()
     {
-        if (_data is null) return;
+        if (_items.Count == 0) return;
 
         _busy = true;
-        _log.Clear();
+        _processedCount = 0;
+        _successCount = 0;
         StateHasChanged();
 
-        var input = new AssetInput { FileName = _fileName!, Data = _data, BodyPart = _bodyPart };
-        _result = await Pipeline.ProcessAsync(input);
-        _log.AddRange(_result.Log);
-
-        if (_result.PreviewImage is not null)
+        foreach (var item in _items)
         {
-            var b64 = Convert.ToBase64String(_result.PreviewImage);
-            _outputUrl = $"data:image/png;base64,{b64}";
+            var input = new AssetInput { FileName = item.Name, Data = item.Data, BodyPart = _bodyPart };
+            item.Result = await Pipeline.ProcessAsync(input);
+
+            if (item.Result.PreviewImage is not null)
+                item.PreviewUrl = $"data:image/png;base64,{Convert.ToBase64String(item.Result.PreviewImage)}";
+
+            _processedCount++;
+            if (item.Result.State == TaskState.Synchronized) _successCount++;
+            _selected = item;
+            StateHasChanged();
         }
 
         _busy = false;
     }
 
+    private string ConsoleText() =>
+        _selected?.Result is not null ? string.Join('\n', _selected.Result.Log) : string.Join('\n', _log);
+
     private async Task DownloadOutput()
     {
-        if (_result?.Output is null) return;
-        var b64 = Convert.ToBase64String(_result.Output);
-        var name = _result.OutputFileName ?? "rb_skin_forge_output";
-        await JS.InvokeVoidAsync("rbDownload", name, _result.OutputContentType, b64);
+        var r = _selected?.Result;
+        if (r?.Output is null) return;
+        var b64 = Convert.ToBase64String(r.Output);
+        await JS.InvokeVoidAsync("rbDownload", r.OutputFileName ?? "rb_skin_forge_output", r.OutputContentType, b64);
     }
 
     private async Task DownloadLog()
     {
-        var text = string.Join('\n', _log);
-        var bytes = System.Text.Encoding.UTF8.GetBytes(text);
-        var b64 = Convert.ToBase64String(bytes);
+        var r = _selected?.Result;
+        if (r is null) return;
+        var text = string.Join('\n', r.Log);
+        var b64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(text));
         await JS.InvokeVoidAsync("rbDownload", "rb_skin_forge_log.txt", "text/plain", b64);
     }
+
+    private static string FormatBounds(QualityReport r) =>
+        $"{r.BoundsX:0.##} × {r.BoundsY:0.##} × {r.BoundsZ:0.##}";
 
     private static string FormatBytes(long bytes) =>
         bytes < 1024 ? $"{bytes} B" :
         bytes < 1024 * 1024 ? $"{bytes / 1024.0:0.0} KB" :
         $"{bytes / (1024.0 * 1024.0):0.0} MB";
+
+    public void Dispose() => L.Changed -= OnLocChanged;
 }

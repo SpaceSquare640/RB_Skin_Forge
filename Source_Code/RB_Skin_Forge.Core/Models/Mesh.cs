@@ -27,6 +27,22 @@ public struct Face
 }
 
 /// <summary>
+/// A Roblox attachment node placed by the auto-rigger (Phase 3): a named point in
+/// mesh space where Roblox would weld accessories or rig joints (e.g. NeckRigAttachment).
+/// </summary>
+public readonly struct Attachment
+{
+    public string Name { get; }
+    public Vector3 Position { get; }
+
+    public Attachment(string name, Vector3 position)
+    {
+        Name = name;
+        Position = position;
+    }
+}
+
+/// <summary>
 /// A triangulated mesh: raw position/uv/normal lists plus faces that index into them.
 /// Kept format-agnostic so OBJ now (and FBX in Phase 3) can populate the same structure.
 /// </summary>
@@ -37,6 +53,9 @@ public sealed class MeshData
     public List<Vector3> Normals { get; } = new();
     public List<Face> Faces { get; } = new();
     public HashSet<string> Materials { get; } = new();
+
+    /// <summary>Roblox attachment nodes implanted by the auto-rigger (Phase 3).</summary>
+    public List<Attachment> Attachments { get; } = new();
 
     public int TriangleCount => Faces.Count;
     public int VertexCount => Positions.Count;

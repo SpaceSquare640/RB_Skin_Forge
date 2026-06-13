@@ -7,24 +7,49 @@
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="16">
 
-            <Label Text="RB Skin Forge" FontSize="28" FontAttributes="Bold" />
-            <Label Text="Convert an image into a Roblox clothing template (Phase 1 — 2D)."
-                   TextColor="Gray" />
+            <!-- Header: title + language + theme -->
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                <Label Text="RB Skin Forge" FontSize="28" FontAttributes="Bold"
+                       VerticalOptions="Center" />
+                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                    <Picker x:Name="LanguagePicker" WidthRequest="140"
+                            SelectedIndexChanged="OnLanguageChanged" />
+                    <Button x:Name="ThemeAutoBtn"  Text="Auto"  Padding="10,4" FontSize="12" Clicked="OnThemeAuto" />
+                    <Button x:Name="ThemeLightBtn" Text="Light" Padding="10,4" FontSize="12" Clicked="OnThemeLight" />
+                    <Button x:Name="ThemeDarkBtn"  Text="Dark"  Padding="10,4" FontSize="12" Clicked="OnThemeDark" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <Label x:Name="TaglineLabel" TextColor="Gray" />
 
             <!-- Drop Zone / controls -->
             <Border Stroke="#80808040" StrokeThickness="1" Padding="16"
                     StrokeShape="RoundRectangle 10">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Drop Zone" FontSize="18" FontAttributes="Bold" />
+                    <Label x:Name="DropZoneHeading" Text="Drop Zone" FontSize="18" FontAttributes="Bold" />
 
-                    <Label Text="Body part" TextColor="Gray" />
+                    <Label x:Name="BodyPartHeading" Text="Body part" TextColor="Gray" />
                     <Picker x:Name="BodyPartPicker" />
 
-                    <Button x:Name="PickBtn" Text="Choose Image…" Clicked="OnPickClicked" />
+                    <Button x:Name="PickBtn" Text="Choose Files…" Clicked="OnPickClicked" />
                     <Label x:Name="FileLabel" Text="No file selected" TextColor="Gray" />
+
+                    <CollectionView x:Name="FileList" SelectionMode="Single"
+                                    SelectionChanged="OnFileSelected" MaximumHeightRequest="170">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="6,4" ColumnDefinitions="*,Auto">
+                                    <Label Text="{Binding Name}" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="1" Text="{Binding StateText}"
+                                           FontSize="12" FontAttributes="Bold" TextColor="Gray" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
                     <Button x:Name="RunBtn" Text="Generate"
                             Clicked="OnRunClicked" IsEnabled="False" />
+                    <Label x:Name="BatchSummaryLabel" Text="" TextColor="Gray" IsVisible="False" />
                 </VerticalStackLayout>
             </Border>
 
@@ -32,7 +57,7 @@
             <Border Stroke="#80808040" StrokeThickness="1" Padding="16"
                     StrokeShape="RoundRectangle 10">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Preview" FontSize="18" FontAttributes="Bold" />
+                    <Label x:Name="PreviewHeading" Text="Preview" FontSize="18" FontAttributes="Bold" />
                     <Image x:Name="PreviewImage" Aspect="AspectFit" HeightRequest="280"
                            BackgroundColor="#20808080" />
                 </VerticalStackLayout>
@@ -43,7 +68,7 @@
                     StrokeShape="RoundRectangle 10">
                 <VerticalStackLayout Spacing="12">
                     <HorizontalStackLayout Spacing="10">
-                        <Label Text="Console &amp; Stats" FontSize="18" FontAttributes="Bold" />
+                        <Label x:Name="ConsoleHeading" Text="Console &amp; Stats" FontSize="18" FontAttributes="Bold" />
                         <Label x:Name="StateLabel" Text="" FontAttributes="Bold" VerticalOptions="Center" />
                     </HorizontalStackLayout>
 
