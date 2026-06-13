@@ -1,0 +1,169 @@
+@page "/"
+@inject IAssetPipeline Pipeline
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<PageTitle>RB Skin Forge</PageTitle>
+
+<div class="forge">
+    <h1>RB Skin Forge</h1>
+    <p class="tagline">Image → Roblox clothing template (2D), or OBJ mesh → cleaned, validated Roblox mesh (3D).</p>
+
+    <div class="forge-grid">
+        <!-- Drop Zone + controls -->
+        <section class="panel">
+            <h2>Drop Zone</h2>
+
+            <label class="field">
+                Body part
+                <select @bind="_bodyPart">
+                    @foreach (var part in Enum.GetValues<BodyPart>())
+                    {
+                        <option value="@part">@part</option>
+                    }
+                </select>
+            </label>
+
+            <label class="dropzone">
+                <InputFile OnChange="OnFileSelected" accept=".png,.jpg,.jpeg,.bmp,.tga,.obj" />
+                <span>@(_fileName ?? "Choose or drop an image (PNG, JPG…) or an OBJ mesh")</span>
+            </label>
+
+            <button class="run" disabled="@(_busy || _data is null)" @onclick="Run">
+                @(_busy ? "Processing..." : "Generate Template")
+            </button>
+        </section>
+
+        <!-- Preview -->
+        <section class="panel">
+            <h2>Preview</h2>
+            @if (_outputUrl is not null)
+            {
+                <img class="preview" src="@_outputUrl" alt="Generated template" />
+            }
+            else
+            {
+                <div class="preview placeholder">No output yet</div>
+            }
+        </section>
+    </div>
+
+    <!-- Console & Stats -->
+    <section class="panel">
+        <div class="console-head">
+            <h2>Console &amp; Stats</h2>
+            @if (_result is not null)
+            {
+                <span class="state state-@_result.State">@_result.State</span>
+            }
+        </div>
+
+        @if (_result is not null)
+        {
+            <div class="stats">
+                @if (_result.Report.OutputWidth > 0)
+                {
+                    <div><strong>Dimensions</strong> @_result.Report.OutputWidth &times; @_result.Report.OutputHeight px</div>
+                }
+                @if (_result.Report.TriangleCount > 0)
+                {
+                    <div><strong>Triangles</strong> @_result.Report.TriangleCount.ToString("N0")</div>
+                }
+                <div><strong>Output size</strong> @FormatBytes(_result.Report.TextureSizeBytes)</div>
+            </div>
+        }
+
+        <pre class="console">@string.Join('\n', _log)</pre>
+
+        <div class="actions">
+            @if (_result?.Output is not null)
+            {
+                <button class="secondary" @onclick="DownloadOutput">Download output</button>
+            }
+            @if (_log.Count > 0)
+            {
+                <button class="secondary" @onclick="DownloadLog">Download log</button>
+            }
+        </div>
+    </section>
+
+    <footer class="credit">Creators: SpaceSquare &amp; Claude Code | Owner: SpaceSquare</footer>
+</div>
+
+@code {
+    private string? _fileName;
+    private byte[]? _data;
+    private BodyPart _bodyPart = BodyPart.Torso;
+
+    private bool _busy;
+    private ProcessingResult? _result;
+    private string? _outputUrl;
+    private readonly List<string> _log = new();
+
+    // 10 MB upload guard.
+    private const long MaxUploadBytes = 10 * 1024 * 1024;
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        _fileName = file.Name;
+        _outputUrl = null;
+        _result = null;
+        _log.Clear();
+
+        try
+        {
+            using var stream = file.OpenReadStream(MaxUploadBytes);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            _data = ms.ToArray();
+            _log.Add($"Loaded '{_fileName}' ({_data.Length:N0} bytes). Ready.");
+        }
+        catch (Exception ex)
+        {
+            _data = null;
+            _log.Add($"[Error] Could not read file: {ex.Message}");
+        }
+    }
+
+    private async Task Run()
+    {
+        if (_data is null) return;
+
+        _busy = true;
+        _log.Clear();
+        StateHasChanged();
+
+        var input = new AssetInput { FileName = _fileName!, Data = _data, BodyPart = _bodyPart };
+        _result = await Pipeline.ProcessAsync(input);
+        _log.AddRange(_result.Log);
+
+        if (_result.PreviewImage is not null)
+        {
+            var b64 = Convert.ToBase64String(_result.PreviewImage);
+            _outputUrl = $"data:image/png;base64,{b64}";
+        }
+
+        _busy = false;
+    }
+
+    private async Task DownloadOutput()
+    {
+        if (_result?.Output is null) return;
+        var b64 = Convert.ToBase64String(_result.Output);
+        var name = _result.OutputFileName ?? "rb_skin_forge_output";
+        await JS.InvokeVoidAsync("rbDownload", name, _result.OutputContentType, b64);
+    }
+
+    private async Task DownloadLog()
+    {
+        var text = string.Join('\n', _log);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(text);
+        var b64 = Convert.ToBase64String(bytes);
+        await JS.InvokeVoidAsync("rbDownload", "rb_skin_forge_log.txt", "text/plain", b64);
+    }
+
+    private static string FormatBytes(long bytes) =>
+        bytes < 1024 ? $"{bytes} B" :
+        bytes < 1024 * 1024 ? $"{bytes / 1024.0:0.0} KB" :
+        $"{bytes / (1024.0 * 1024.0):0.0} MB";
+}

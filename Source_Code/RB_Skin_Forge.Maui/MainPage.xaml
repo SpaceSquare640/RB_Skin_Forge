@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RB_Skin_Forge.Maui.MainPage"
+             Title="RB Skin Forge">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+
+            <Label Text="RB Skin Forge" FontSize="28" FontAttributes="Bold" />
+            <Label Text="Convert an image into a Roblox clothing template (Phase 1 — 2D)."
+                   TextColor="Gray" />
+
+            <!-- Drop Zone / controls -->
+            <Border Stroke="#80808040" StrokeThickness="1" Padding="16"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Drop Zone" FontSize="18" FontAttributes="Bold" />
+
+                    <Label Text="Body part" TextColor="Gray" />
+                    <Picker x:Name="BodyPartPicker" />
+
+                    <Button x:Name="PickBtn" Text="Choose Image…" Clicked="OnPickClicked" />
+                    <Label x:Name="FileLabel" Text="No file selected" TextColor="Gray" />
+
+                    <Button x:Name="RunBtn" Text="Generate"
+                            Clicked="OnRunClicked" IsEnabled="False" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Preview -->
+            <Border Stroke="#80808040" StrokeThickness="1" Padding="16"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Preview" FontSize="18" FontAttributes="Bold" />
+                    <Image x:Name="PreviewImage" Aspect="AspectFit" HeightRequest="280"
+                           BackgroundColor="#20808080" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Console & Stats -->
+            <Border Stroke="#80808040" StrokeThickness="1" Padding="16"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="12">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="Console &amp; Stats" FontSize="18" FontAttributes="Bold" />
+                        <Label x:Name="StateLabel" Text="" FontAttributes="Bold" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Label x:Name="StatsLabel" Text="" TextColor="Gray" />
+
+                    <Border BackgroundColor="#0f1419" Padding="10" StrokeShape="RoundRectangle 6">
+                        <Label x:Name="ConsoleLabel" Text="" FontFamily="Consolas"
+                               FontSize="12" TextColor="#d7e0ea" />
+                    </Border>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Button x:Name="SaveTemplateBtn" Text="Save Output"
+                                Clicked="OnSaveTemplateClicked" IsEnabled="False" />
+                        <Button x:Name="SaveLogBtn" Text="Save Log"
+                                Clicked="OnSaveLogClicked" IsEnabled="False" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Creators: SpaceSquare &amp; Claude Code | Owner: SpaceSquare"
+                   FontSize="12" TextColor="Gray"
+                   HorizontalOptions="Center" Margin="0,8,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

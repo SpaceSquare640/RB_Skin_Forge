@@ -1,0 +1,33 @@
+# ===== RB_Skin_Forge =====
+
+# --- Private / never upload (per project rules: no tokens) ---
+[For Claude & Me]/
+[This folder is for testing]/
+*.token
+**/GitHub Token/
+
+# --- .NET build output ---
+bin/
+obj/
+out/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+
+# --- IDE ---
+.vs/
+.vscode/
+.idea/
+
+# --- OS ---
+Thumbs.db
+.DS_Store
+
+# --- Publish artifacts (built packages live on release branches, not in source) ---
+publish/
+*.app
+
+# --- Release staging + built installer (these go to GitHub Releases, not main) ---
+Release/
+Installer/*.exe
