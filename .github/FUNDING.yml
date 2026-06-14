@@ -1,4 +1,4 @@
 # Funding platforms for the repository "Sponsor" button.
 # https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
 
-{ "platform": "BUY_ME_A_COFFEE", "url": "https://buymeacoffee.com/spacesquare" }
+buy_me_a_coffee: spacesquare
