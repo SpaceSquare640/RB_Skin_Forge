@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RB Skin Forge</title>
+    <base href="/" />
+    <script>
+        // Apply the saved theme before first paint to avoid a flash of the wrong scheme.
+        (function () {
+            try {
+                var t = localStorage.getItem('rb-theme');
+                if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+            } catch (e) { }
+        })();
+    </script>
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="RB_Skin_Forge.Web.styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        // Trigger a browser download of a base64 payload (used by Console & Stats "Download log").
+        window.rbDownload = (fileName, mimeType, base64) => {
+            const link = document.createElement('a');
+            link.href = `data:${mimeType};base64,${base64}`;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        // Theme: 'auto' clears the override (CSS prefers-color-scheme decides);
+        // 'light'/'dark' force the scheme and persist the choice.
+        window.rbSetTheme = (mode) => {
+            try {
+                if (mode === 'light' || mode === 'dark') {
+                    document.documentElement.setAttribute('data-theme', mode);
+                    localStorage.setItem('rb-theme', mode);
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.removeItem('rb-theme');
+                }
+            } catch (e) { }
+        };
+        window.rbGetTheme = () => {
+            try { return localStorage.getItem('rb-theme') || 'auto'; } catch (e) { return 'auto'; }
+        };
+
+        // Language: remember the user's UI language across visits.
+        window.rbSetLang = (code) => { try { localStorage.setItem('rb-lang', code); } catch (e) { } };
+        window.rbGetLang = () => { try { return localStorage.getItem('rb-lang') || ''; } catch (e) { return ''; } };
+    </script>
+</body>
+
+</html>
