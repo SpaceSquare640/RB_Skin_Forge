@@ -15,10 +15,11 @@ out/
 *.user
 *.suo
 
-# --- IDE ---
+# --- IDE / local tooling ---
 .vs/
 .vscode/
 .idea/
+.claude/
 
 # --- OS ---
 Thumbs.db

@@ -6,12 +6,30 @@
 
     <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
 
-    <Color x:Key="Primary">#512BD4</Color>
-    <Color x:Key="PrimaryDark">#ac99ea</Color>
+    <!-- RB Skin Forge brand palette -->
+    <Color x:Key="Primary">#2F6DF6</Color>
+    <Color x:Key="PrimaryDark">#3B7BFF</Color>
     <Color x:Key="PrimaryDarkText">#242424</Color>
-    <Color x:Key="Secondary">#DFD8F7</Color>
-    <Color x:Key="SecondaryDarkText">#9880e5</Color>
-    <Color x:Key="Tertiary">#2B0B98</Color>
+    <Color x:Key="Secondary">#DDE7FB</Color>
+    <Color x:Key="SecondaryDarkText">#6A5CFF</Color>
+    <Color x:Key="Tertiary">#1B6EC2</Color>
+
+    <!-- Surfaces / strokes / text for the RB Skin Forge UI -->
+    <Color x:Key="RbBgLight">#EEF1F7</Color>
+    <Color x:Key="RbBgDark">#0C0F16</Color>
+    <Color x:Key="RbCardLight">#FFFFFF</Color>
+    <Color x:Key="RbCardDark">#161B25</Color>
+    <Color x:Key="RbSurfaceLight">#F3F5FA</Color>
+    <Color x:Key="RbSurfaceDark">#1D2330</Color>
+    <Color x:Key="RbStrokeLight">#E3E7F0</Color>
+    <Color x:Key="RbStrokeDark">#283041</Color>
+    <Color x:Key="RbTextLight">#131720</Color>
+    <Color x:Key="RbTextDark">#E8EEF8</Color>
+    <Color x:Key="RbMutedLight">#5C6675</Color>
+    <Color x:Key="RbMutedDark">#97A3B6</Color>
+    <Color x:Key="RbConsoleBg">#0E1320</Color>
+    <Color x:Key="RbConsoleText">#D4DDEC</Color>
+    <Color x:Key="RbAccent">#2F6DF6</Color>
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>

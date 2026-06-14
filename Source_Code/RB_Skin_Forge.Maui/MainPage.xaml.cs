@@ -58,6 +58,8 @@ public partial class MainPage : ContentPage
 		ThemeAutoBtn.Text = _loc.T("theme.auto");
 		ThemeLightBtn.Text = _loc.T("theme.light");
 		ThemeDarkBtn.Text = _loc.T("theme.dark");
+		LanguageHeading.Text = _loc.T("nav.language");
+		ThemeHeading.Text = _loc.T("nav.theme");
 
 		if (_selected is null)
 			FileLabel.Text = _loc.T("file.none");
@@ -104,11 +106,30 @@ public partial class MainPage : ContentPage
 			};
 		}
 
-		// Highlight the active segment.
-		ThemeAutoBtn.FontAttributes = mode == "auto" ? FontAttributes.Bold : FontAttributes.None;
-		ThemeLightBtn.FontAttributes = mode == "light" ? FontAttributes.Bold : FontAttributes.None;
-		ThemeDarkBtn.FontAttributes = mode == "dark" ? FontAttributes.Bold : FontAttributes.None;
+		// Highlight the active segment (filled accent vs. transparent).
+		StyleSeg(ThemeAutoBtn, mode == "auto");
+		StyleSeg(ThemeLightBtn, mode == "light");
+		StyleSeg(ThemeDarkBtn, mode == "dark");
 	}
+
+	private void StyleSeg(Button b, bool active)
+	{
+		if (active)
+		{
+			b.BackgroundColor = GetColor("RbAccent", Color.FromArgb("#2F6DF6"));
+			b.TextColor = Colors.White;
+			b.FontAttributes = FontAttributes.Bold;
+		}
+		else
+		{
+			b.BackgroundColor = Colors.Transparent;
+			b.TextColor = Colors.Gray;
+			b.FontAttributes = FontAttributes.None;
+		}
+	}
+
+	private static Color GetColor(string key, Color fallback) =>
+		Application.Current?.Resources.TryGetValue(key, out var v) == true && v is Color c ? c : fallback;
 
 	// --- File picking (batch) ---------------------------------------------
 

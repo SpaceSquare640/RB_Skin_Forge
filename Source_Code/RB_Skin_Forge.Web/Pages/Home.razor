@@ -8,47 +8,66 @@
 
 <div class="forge">
 
-    <div class="topbar">
-        <h1>RB Skin Forge</h1>
-        <div class="topbar-controls">
-            <label class="mini-field">
-                <span>@L.T("nav.language")</span>
-                <select @onchange="OnLanguageChanged">
-                    @foreach (var lang in Languages.All)
-                    {
-                        <option value="@lang.Code" selected="@(lang.Code == L.CurrentCode)">@lang.NativeName</option>
-                    }
-                </select>
-            </label>
-            <div class="seg-group" role="group" aria-label="@L.T("nav.theme")">
-                <button class="@SegClass("auto")" @onclick='() => SetTheme("auto")'>@L.T("theme.auto")</button>
-                <button class="@SegClass("light")" @onclick='() => SetTheme("light")'>@L.T("theme.light")</button>
-                <button class="@SegClass("dark")" @onclick='() => SetTheme("dark")'>@L.T("theme.dark")</button>
+    <header class="appbar">
+        <div class="brand">
+            <img class="brand__logo" src="favicon.png" alt="RB Skin Forge logo" />
+            <div class="brand__text">
+                <span class="brand__name">RB Skin Forge</span>
+                <span class="brand__sub">Roblox clothing &amp; 3D mesh forge</span>
             </div>
         </div>
-    </div>
+        <div class="appbar__controls">
+            <label class="control">
+                <span class="control__label">@L.T("nav.language")</span>
+                <span class="select-wrap">
+                    <select @onchange="OnLanguageChanged">
+                        @foreach (var lang in Languages.All)
+                        {
+                            <option value="@lang.Code" selected="@(lang.Code == L.CurrentCode)">@lang.NativeName</option>
+                        }
+                    </select>
+                </span>
+            </label>
+            <div class="control">
+                <span class="control__label">@L.T("nav.theme")</span>
+                <div class="seg-group" role="group" aria-label="@L.T("nav.theme")">
+                    <button class="@SegClass("auto")" @onclick='() => SetTheme("auto")'>@L.T("theme.auto")</button>
+                    <button class="@SegClass("light")" @onclick='() => SetTheme("light")'>@L.T("theme.light")</button>
+                    <button class="@SegClass("dark")" @onclick='() => SetTheme("dark")'>@L.T("theme.dark")</button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <p class="tagline">@L.T("app.tagline")</p>
+    <p class="hero">@L.T("app.tagline")</p>
 
     <div class="forge-grid">
         <!-- Drop Zone + controls -->
-        <section class="panel">
-            <h2>@L.T("panel.dropzone")</h2>
+        <section class="card">
+            <div class="card__head"><h2>@L.T("panel.dropzone")</h2></div>
 
             <label class="field">
-                <span>@L.T("field.bodypart")</span>
-                <select @bind="_bodyPart">
-                    @foreach (var part in Enum.GetValues<BodyPart>())
-                    {
-                        <option value="@part">@L.BodyPartName(part)</option>
-                    }
-                </select>
+                <span class="field__label">@L.T("field.bodypart")</span>
+                <span class="select-wrap">
+                    <select @bind="_bodyPart">
+                        @foreach (var part in Enum.GetValues<BodyPart>())
+                        {
+                            <option value="@part">@L.BodyPartName(part)</option>
+                        }
+                    </select>
+                </span>
             </label>
 
             <label class="dropzone">
                 <InputFile OnChange="OnFilesSelected" multiple
                            accept=".png,.jpg,.jpeg,.bmp,.tga,.obj,.fbx" />
-                <span>@L.T("dropzone.hint")</span>
+                <span class="dropzone__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4" /><path d="M8 8l4-4 4 4" /><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
+                </span>
+                <span class="dropzone__title">@L.T("dropzone.hint")</span>
+                <span class="dropzone__formats">
+                    <span class="fmt">PNG</span><span class="fmt">JPG</span><span class="fmt">OBJ</span><span class="fmt">FBX</span>
+                </span>
             </label>
 
             @if (_items.Count > 0)
@@ -57,18 +76,29 @@
                     @foreach (var item in _items)
                     {
                         <li class="@(_selected == item ? "sel" : "")" @onclick="() => Select(item)">
+                            <span class="file-ico">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6" /></svg>
+                            </span>
                             <span class="fname">@item.Name</span>
                             @if (item.Result is not null)
                             {
-                                <span class="state state-@item.Result.State">@L.StateName(item.Result.State)</span>
+                                <span class="chip chip--@item.Result.State">@L.StateName(item.Result.State)</span>
                             }
                         </li>
                     }
                 </ul>
             }
 
-            <button class="run" disabled="@(_busy || _items.Count == 0)" @onclick="Run">
-                @(_busy ? L.T("btn.processing") : L.T("btn.generate"))
+            <button class="btn btn--primary btn--block" disabled="@(_busy || _items.Count == 0)" @onclick="Run">
+                @if (_busy)
+                {
+                    <span>@L.T("btn.processing")</span>
+                }
+                else
+                {
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.7 4.7L18.5 8l-4.8 1.3L12 14l-1.7-4.7L5.5 8l4.8-1.3z" /><path d="M19 12l.9 2.4 2.6.9-2.6.9L19 19l-.9-2.8-2.6-.9 2.6-.9z" /></svg>
+                    <span>@L.T("btn.generate")</span>
+                }
             </button>
 
             @if (_items.Count > 1 && _processedCount > 0)
@@ -78,82 +108,120 @@
         </section>
 
         <!-- Preview -->
-        <section class="panel">
-            <h2>@L.T("panel.preview")</h2>
-            @if (_selected?.PreviewUrl is not null)
-            {
-                <img class="preview" src="@_selected.PreviewUrl" alt="Preview" />
-            }
-            else
-            {
-                <div class="preview placeholder">@L.T("preview.empty")</div>
-            }
+        <section class="card">
+            <div class="card__head"><h2>@L.T("panel.preview")</h2></div>
+            <div class="preview-frame">
+                @if (_selected?.PreviewUrl is not null)
+                {
+                    <img class="preview" src="@_selected.PreviewUrl" alt="Preview" />
+                }
+                else
+                {
+                    <div class="preview placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="M21 15l-5-5L5 21" /></svg>
+                        <span>@L.T("preview.empty")</span>
+                    </div>
+                }
+            </div>
         </section>
     </div>
 
     <!-- Console & Stats -->
-    <section class="panel">
-        <div class="console-head">
+    <section class="card">
+        <div class="card__head">
             <h2>@L.T("panel.console")</h2>
             @if (_selected?.Result is not null)
             {
-                <span class="state state-@_selected.Result.State">@L.StateName(_selected.Result.State)</span>
+                <span class="chip chip--@_selected.Result.State">@L.StateName(_selected.Result.State)</span>
             }
         </div>
 
         @if (_selected?.Result is not null)
         {
             var r = _selected.Result.Report;
-            <div class="stats">
+            <div class="statgrid">
                 @if (r.OutputWidth > 0)
                 {
-                    <div><strong>@L.T("stats.dimensions")</strong> @r.OutputWidth &times; @r.OutputHeight px</div>
+                    <div class="stat">
+                        <span class="stat__label">@L.T("stats.dimensions")</span>
+                        <span class="stat__value">@r.OutputWidth&times;@r.OutputHeight <span class="unit">px</span></span>
+                    </div>
                 }
                 @if (r.TriangleCount > 0)
                 {
-                    <div>
-                        <strong>@L.T("stats.triangles")</strong> @r.TriangleCount.ToString("N0")
-                        @if (r.WasDecimated)
-                        {
-                            <em class="tag">@L.T("stats.decimated")</em>
-                        }
+                    <div class="stat">
+                        <span class="stat__label">@L.T("stats.triangles")</span>
+                        <span class="stat__value">
+                            @r.TriangleCount.ToString("N0")
+                            @if (r.WasDecimated)
+                            {
+                                <em class="tag">@L.T("stats.decimated")</em>
+                            }
+                        </span>
                     </div>
                 }
                 @if (r.VertexCount > 0)
                 {
-                    <div><strong>@L.T("stats.vertices")</strong> @r.VertexCount.ToString("N0")</div>
+                    <div class="stat">
+                        <span class="stat__label">@L.T("stats.vertices")</span>
+                        <span class="stat__value">@r.VertexCount.ToString("N0")</span>
+                    </div>
                 }
                 @if (r.MaterialCount > 0)
                 {
-                    <div><strong>@L.T("stats.materials")</strong> @r.MaterialCount</div>
+                    <div class="stat">
+                        <span class="stat__label">@L.T("stats.materials")</span>
+                        <span class="stat__value">@r.MaterialCount</span>
+                    </div>
                 }
                 @if (r.AttachmentCount > 0)
                 {
-                    <div><strong>@L.T("stats.attachments")</strong> @r.AttachmentCount</div>
+                    <div class="stat">
+                        <span class="stat__label">@L.T("stats.attachments")</span>
+                        <span class="stat__value">@r.AttachmentCount</span>
+                    </div>
                 }
                 @if (r.BoundsX > 0 || r.BoundsY > 0 || r.BoundsZ > 0)
                 {
-                    <div><strong>@L.T("stats.bounds")</strong> @FormatBounds(r)</div>
+                    <div class="stat">
+                        <span class="stat__label">@L.T("stats.bounds")</span>
+                        <span class="stat__value" style="font-size:0.92rem">@FormatBounds(r)</span>
+                    </div>
                 }
-                <div><strong>@L.T("stats.outputsize")</strong> @FormatBytes(r.TextureSizeBytes)</div>
+                <div class="stat">
+                    <span class="stat__label">@L.T("stats.outputsize")</span>
+                    <span class="stat__value">@FormatBytes(r.TextureSizeBytes)</span>
+                </div>
             </div>
         }
 
-        <pre class="console">@ConsoleText()</pre>
+        <div class="terminal">
+            <div class="terminal__bar">
+                <span></span><span></span><span></span>
+                <span class="terminal__title">@L.T("panel.console")</span>
+            </div>
+            <pre class="terminal__body">@ConsoleText()</pre>
+        </div>
 
         <div class="actions">
             @if (_selected?.Result?.Output is not null)
             {
-                <button class="secondary" @onclick="DownloadOutput">@L.T("btn.downloadoutput")</button>
+                <button class="btn btn--ghost" @onclick="DownloadOutput">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12" /><path d="M8 11l4 4 4-4" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
+                    <span>@L.T("btn.downloadoutput")</span>
+                </button>
             }
             @if (_selected?.Result is not null)
             {
-                <button class="secondary" @onclick="DownloadLog">@L.T("btn.downloadlog")</button>
+                <button class="btn btn--ghost" @onclick="DownloadLog">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12" /><path d="M8 11l4 4 4-4" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
+                    <span>@L.T("btn.downloadlog")</span>
+                </button>
             }
         </div>
     </section>
 
-    <footer class="credit">Creators: SpaceSquare &amp; Claude Code | Owner: SpaceSquare</footer>
+    <footer class="credit">Creators: <strong>SpaceSquare &amp; Claude Code</strong> | Owner: <strong>SpaceSquare</strong></footer>
 </div>
 
 @code {

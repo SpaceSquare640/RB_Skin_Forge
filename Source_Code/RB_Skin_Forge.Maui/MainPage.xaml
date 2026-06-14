@@ -2,95 +2,161 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RB_Skin_Forge.Maui.MainPage"
-             Title="RB Skin Forge">
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource RbBgLight}, Dark={StaticResource RbBgDark}}">
+
+    <ContentPage.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource RbCardLight}, Dark={StaticResource RbCardDark}}" />
+            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource RbStrokeLight}, Dark={StaticResource RbStrokeDark}}" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+            <Setter Property="Padding" Value="18" />
+        </Style>
+        <Style x:Key="Heading" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource RbMutedLight}, Dark={StaticResource RbMutedDark}}" />
+            <Setter Property="CharacterSpacing" Value="1.2" />
+        </Style>
+        <Style x:Key="Muted" TargetType="Label">
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource RbMutedLight}, Dark={StaticResource RbMutedDark}}" />
+        </Style>
+        <Style x:Key="GhostButton" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="{StaticResource RbAccent}" />
+            <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource RbStrokeLight}, Dark={StaticResource RbStrokeDark}}" />
+            <Setter Property="BorderWidth" Value="1" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style x:Key="SegButton" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource RbMutedLight}, Dark={StaticResource RbMutedDark}}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="12,7" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="MinimumHeightRequest" Value="0" />
+            <Setter Property="MinimumWidthRequest" Value="0" />
+        </Style>
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+        <VerticalStackLayout Padding="18,16" Spacing="14" MaximumWidthRequest="900" HorizontalOptions="Center">
 
-            <!-- Header: title + language + theme -->
-            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
-                <Label Text="RB Skin Forge" FontSize="28" FontAttributes="Bold"
-                       VerticalOptions="Center" />
-                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                    <Picker x:Name="LanguagePicker" WidthRequest="140"
-                            SelectedIndexChanged="OnLanguageChanged" />
-                    <Button x:Name="ThemeAutoBtn"  Text="Auto"  Padding="10,4" FontSize="12" Clicked="OnThemeAuto" />
-                    <Button x:Name="ThemeLightBtn" Text="Light" Padding="10,4" FontSize="12" Clicked="OnThemeLight" />
-                    <Button x:Name="ThemeDarkBtn"  Text="Dark"  Padding="10,4" FontSize="12" Clicked="OnThemeDark" />
-                </HorizontalStackLayout>
-            </Grid>
+            <!-- Header -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="14">
+                    <HorizontalStackLayout Spacing="12">
+                        <Border BackgroundColor="{AppThemeBinding Light={StaticResource RbSurfaceLight}, Dark={StaticResource RbSurfaceDark}}"
+                                StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="3"
+                                WidthRequest="50" HeightRequest="50">
+                            <Image Source="rblogo.png" Aspect="AspectFit" />
+                        </Border>
+                        <VerticalStackLayout Spacing="1" VerticalOptions="Center">
+                            <Label Text="RB Skin Forge" FontSize="24" FontAttributes="Bold"
+                                   TextColor="{StaticResource RbAccent}" />
+                            <Label Text="Roblox clothing &amp; 3D mesh forge" FontSize="12"
+                                   Style="{StaticResource Muted}" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
 
-            <Label x:Name="TaglineLabel" TextColor="Gray" />
+                    <FlexLayout Wrap="Wrap" AlignItems="End" JustifyContent="Start">
+                        <VerticalStackLayout Spacing="3" Margin="0,0,16,0">
+                            <Label x:Name="LanguageHeading" Text="Language" Style="{StaticResource Heading}" />
+                            <Picker x:Name="LanguagePicker" WidthRequest="150"
+                                    SelectedIndexChanged="OnLanguageChanged" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="3">
+                            <Label x:Name="ThemeHeading" Text="Theme" Style="{StaticResource Heading}" />
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource RbSurfaceLight}, Dark={StaticResource RbSurfaceDark}}"
+                                    Stroke="{AppThemeBinding Light={StaticResource RbStrokeLight}, Dark={StaticResource RbStrokeDark}}"
+                                    StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="3">
+                                <HorizontalStackLayout Spacing="2">
+                                    <Button x:Name="ThemeAutoBtn"  Text="Auto"  Style="{StaticResource SegButton}" Clicked="OnThemeAuto" />
+                                    <Button x:Name="ThemeLightBtn" Text="Light" Style="{StaticResource SegButton}" Clicked="OnThemeLight" />
+                                    <Button x:Name="ThemeDarkBtn"  Text="Dark"  Style="{StaticResource SegButton}" Clicked="OnThemeDark" />
+                                </HorizontalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label x:Name="TaglineLabel" Style="{StaticResource Muted}" Margin="2,0" />
 
             <!-- Drop Zone / controls -->
-            <Border Stroke="#80808040" StrokeThickness="1" Padding="16"
-                    StrokeShape="RoundRectangle 10">
+            <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="12">
-                    <Label x:Name="DropZoneHeading" Text="Drop Zone" FontSize="18" FontAttributes="Bold" />
+                    <Label x:Name="DropZoneHeading" Text="DROP ZONE" Style="{StaticResource Heading}" />
 
-                    <Label x:Name="BodyPartHeading" Text="Body part" TextColor="Gray" />
+                    <Label x:Name="BodyPartHeading" Text="Body part" Style="{StaticResource Muted}" FontSize="13" />
                     <Picker x:Name="BodyPartPicker" />
 
-                    <Button x:Name="PickBtn" Text="Choose Files…" Clicked="OnPickClicked" />
-                    <Label x:Name="FileLabel" Text="No file selected" TextColor="Gray" />
+                    <Button x:Name="PickBtn" Text="Choose Files…" Style="{StaticResource GhostButton}" Clicked="OnPickClicked" />
+                    <Label x:Name="FileLabel" Text="No file selected" Style="{StaticResource Muted}" FontSize="12" />
 
                     <CollectionView x:Name="FileList" SelectionMode="Single"
-                                    SelectionChanged="OnFileSelected" MaximumHeightRequest="170">
+                                    SelectionChanged="OnFileSelected" MaximumHeightRequest="180">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Grid Padding="6,4" ColumnDefinitions="*,Auto">
-                                    <Label Text="{Binding Name}" LineBreakMode="TailTruncation" />
-                                    <Label Grid.Column="1" Text="{Binding StateText}"
-                                           FontSize="12" FontAttributes="Bold" TextColor="Gray" />
-                                </Grid>
+                                <Border BackgroundColor="{AppThemeBinding Light={StaticResource RbSurfaceLight}, Dark={StaticResource RbSurfaceDark}}"
+                                        Stroke="{AppThemeBinding Light={StaticResource RbStrokeLight}, Dark={StaticResource RbStrokeDark}}"
+                                        StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,7" Margin="0,3">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="{Binding Name}" LineBreakMode="TailTruncation" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding StateText}"
+                                               FontSize="12" FontAttributes="Bold" TextColor="{StaticResource RbAccent}" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
 
                     <Button x:Name="RunBtn" Text="Generate"
                             Clicked="OnRunClicked" IsEnabled="False" />
-                    <Label x:Name="BatchSummaryLabel" Text="" TextColor="Gray" IsVisible="False" />
+                    <Label x:Name="BatchSummaryLabel" Text="" Style="{StaticResource Muted}" FontSize="13" IsVisible="False" />
                 </VerticalStackLayout>
             </Border>
 
             <!-- Preview -->
-            <Border Stroke="#80808040" StrokeThickness="1" Padding="16"
-                    StrokeShape="RoundRectangle 10">
+            <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="12">
-                    <Label x:Name="PreviewHeading" Text="Preview" FontSize="18" FontAttributes="Bold" />
-                    <Image x:Name="PreviewImage" Aspect="AspectFit" HeightRequest="280"
-                           BackgroundColor="#20808080" />
+                    <Label x:Name="PreviewHeading" Text="PREVIEW" Style="{StaticResource Heading}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource RbSurfaceLight}, Dark={StaticResource RbSurfaceDark}}"
+                            Stroke="{AppThemeBinding Light={StaticResource RbStrokeLight}, Dark={StaticResource RbStrokeDark}}"
+                            StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="0">
+                        <Image x:Name="PreviewImage" Aspect="AspectFit" HeightRequest="300" Margin="6" />
+                    </Border>
                 </VerticalStackLayout>
             </Border>
 
             <!-- Console & Stats -->
-            <Border Stroke="#80808040" StrokeThickness="1" Padding="16"
-                    StrokeShape="RoundRectangle 10">
+            <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="12">
                     <HorizontalStackLayout Spacing="10">
-                        <Label x:Name="ConsoleHeading" Text="Console &amp; Stats" FontSize="18" FontAttributes="Bold" />
-                        <Label x:Name="StateLabel" Text="" FontAttributes="Bold" VerticalOptions="Center" />
+                        <Label x:Name="ConsoleHeading" Text="CONSOLE &amp; STATS" Style="{StaticResource Heading}" VerticalOptions="Center" />
+                        <Label x:Name="StateLabel" Text="" FontAttributes="Bold" FontSize="13" VerticalOptions="Center" />
                     </HorizontalStackLayout>
 
-                    <Label x:Name="StatsLabel" Text="" TextColor="Gray" />
+                    <Label x:Name="StatsLabel" Text="" Style="{StaticResource Muted}" FontSize="13" />
 
-                    <Border BackgroundColor="#0f1419" Padding="10" StrokeShape="RoundRectangle 6">
+                    <Border BackgroundColor="{StaticResource RbConsoleBg}" Padding="12" StrokeThickness="0" StrokeShape="RoundRectangle 10">
                         <Label x:Name="ConsoleLabel" Text="" FontFamily="Consolas"
-                               FontSize="12" TextColor="#d7e0ea" />
+                               FontSize="12" TextColor="{StaticResource RbConsoleText}" />
                     </Border>
 
                     <HorizontalStackLayout Spacing="10">
-                        <Button x:Name="SaveTemplateBtn" Text="Save Output"
+                        <Button x:Name="SaveTemplateBtn" Text="Save Output" Style="{StaticResource GhostButton}"
                                 Clicked="OnSaveTemplateClicked" IsEnabled="False" />
-                        <Button x:Name="SaveLogBtn" Text="Save Log"
+                        <Button x:Name="SaveLogBtn" Text="Save Log" Style="{StaticResource GhostButton}"
                                 Clicked="OnSaveLogClicked" IsEnabled="False" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
 
             <Label Text="Creators: SpaceSquare &amp; Claude Code | Owner: SpaceSquare"
-                   FontSize="12" TextColor="Gray"
-                   HorizontalOptions="Center" Margin="0,8,0,0" />
+                   FontSize="12" Style="{StaticResource Muted}"
+                   HorizontalOptions="Center" Margin="0,6,0,0" />
 
         </VerticalStackLayout>
     </ScrollView>

@@ -27,7 +27,7 @@ Phase 3 (3D) plus a multi-language interface and batch processing across all thr
 
 **Changed**
 - `IAutoRigger` is now implemented (was a Phase 3 stub); the geometry engine accepts both OBJ and ASCII FBX.
-- The HTML front-end uses a cleaner full-width layout.
+- Redesigned, more professional interface across all versions — branded header, refined light/dark theming, card layout and icons. The HTML front-end no longer depends on Bootstrap.
 
 ### [0.1.0] — 2026-06-13
 First release — Phase 1 (2D images) and Phase 2 (OBJ 3D meshes) across all three platforms.
@@ -62,7 +62,7 @@ First release — Phase 1 (2D images) and Phase 2 (OBJ 3D meshes) across all thr
 
 **變更**
 - `IAutoRigger` 現已實作（先前為第三階段預留）；幾何引擎同時接受 OBJ 與 ASCII FBX。
-- HTML 前端改用更簡潔的全寬版面。
+- 全面重新設計、更專業的介面（品牌標頭、精緻的淺／深色主題、卡片式版面與圖示）。HTML 前端不再依賴 Bootstrap。
 
 ### [0.1.0] — 2026-06-13
 首個版本——第一階段（2D 影像）與第二階段（OBJ 3D 網格），涵蓋三個平台。
@@ -97,7 +97,7 @@ First release — Phase 1 (2D images) and Phase 2 (OBJ 3D meshes) across all thr
 
 **变更**
 - `IAutoRigger` 现已实现（此前为第三阶段预留）；几何引擎同时接受 OBJ 与 ASCII FBX。
-- HTML 前端改用更简洁的全宽布局。
+- 全面重新设计、更专业的界面（品牌标头、精致的浅／深色主题、卡片式布局与图标）。HTML 前端不再依赖 Bootstrap。
 
 ### [0.1.0] — 2026-06-13
 首个版本——第一阶段（2D 图像）与第二阶段（OBJ 3D 网格），覆盖三个平台。
