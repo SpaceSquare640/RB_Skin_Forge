@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation (Wiki)
+    url: https://github.com/SpaceSquare640/RB_Skin_Forge/wiki
+    about: User guide, FAQ, build instructions, architecture and more.
+  - name: Live web demo
+    url: https://spacesquare640.github.io/RB_Skin_Forge/
+    about: Try RB Skin Forge in your browser before filing an issue.
+  - name: Releases / downloads
+    url: https://github.com/SpaceSquare640/RB_Skin_Forge/releases/latest
+    about: Get the latest Windows installer, Android APK or HTML build.
